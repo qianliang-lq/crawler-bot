@@ -1,0 +1,77 @@
+# Example site skill — 证监会深圳专员办 · 通知公告
+# Generated from M0 probe path (2026-09-24 Asia/Shanghai). Review before Live.
+site_id: csrc-szzyb-0599
+family: csrc_search_list
+source_id: csrc-szzyb-0599
+start_urls:
+  - "https://www.csrc.gov.cn/szzyb/c101700/common_list.shtml?channelid=059986f6f4834fe6ae61cb76bd9ef23b"
+compliance:
+  robots: best_effort
+  rate_limit_rps: 0.3
+  notes: "保留来源 URL + 原文哈希 + 抓取时间；禁止打码农场；限速 0.2–0.5 rps"
+runtime:
+  preferred: http
+  headed: optional   # 出口 TLS/WAF 失败时升档探测
+params:
+  host: "www.csrc.gov.cn"
+  org_prefix: "szzyb"
+  column_code: "c101700"
+  channelid: "059986f6f4834fe6ae61cb76bd9ef23b"
+  site_name: "深圳专员办"
+  column_name: "通知公告"
+list_rule:
+  # 壳页 #list 为空；稳态走 searchList JSON（见 common_list.js / 抽样 JSON）
+  api_path: "/searchList/{channelid}"
+  api_path_alt:
+    - "/common/searchList/{channelid}"
+  query:
+    _isAgg: false
+    _isJson: true
+    _pageSize: 20
+    _template: index
+    _rangeTimeGte: ""
+    _channelName: ""
+    page: "{page}"
+  item_fields:
+    - title
+    - url
+    - publishedTimeStr
+    - publishedTime
+    - manuscriptId
+    - content
+    - contentHtml
+    - channelId
+    - channelName
+    - channelCodeName
+  pagination:
+    type: page_param
+    param: page
+    total_field: data.total
+    max_pages_per_run: 20
+detail_rule:
+  content_type: html
+  content_as: markdown
+  title: "meta[name=ArticleTitle] | list.title"
+  published_at: "meta[name=PubDate] | list.publishedTimeStr"  # Asia/Shanghai
+  content: "article main container → detail-to-markdown"
+  attachments: "a[href$='.pdf'], a[href*='preview_resource.action']"
+url_pattern:
+  # JSON url 例: //www.csrc.gov.cn/szzyb/c101700/c7652321/content.shtml
+  detail_template: "https://{host}/{org_prefix}/{column_code}/c{manuscriptId}/content.shtml"
+  id_from_list: manuscriptId
+  list_url_field: url
+incremental:
+  key: url
+  watermark_field: published_at
+  lookback_days: 3
+parse_fields:
+  required: [title, url, published_at, content_md]
+  optional: [source_org, manuscript_id, tags]
+rate_limit:
+  rps: 0.3
+  jitter_ms: [200, 800]
+tests:
+  golden_list_url: "https://www.csrc.gov.cn/searchList/059986f6f4834fe6ae61cb76bd9ef23b?_isAgg=false&_isJson=true&_pageSize=5&_template=index&page=1"
+  golden_detail_urls:
+    - "https://www.csrc.gov.cn/szzyb/c101700/c7652321/content.shtml"
+  fixture_list_json: "/workspace/briefs/reg-crawl-samples/csrc_searchList_sample.json"

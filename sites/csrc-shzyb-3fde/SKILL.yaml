@@ -1,0 +1,74 @@
+# Example site skill — 证监会上海专员办 · 通知公告
+# Same family as csrc-szzyb-0599; only channelid + path prefix + column differ.
+site_id: csrc-shzyb-3fde
+family: csrc_search_list
+source_id: csrc-shzyb-3fde
+start_urls:
+  - "https://www.csrc.gov.cn/shzyb/c101682/common_list.shtml?channelid=3fdeb6b6c586486b9c38aafa68cd2a93"
+compliance:
+  robots: best_effort
+  rate_limit_rps: 0.3
+  notes: "保留来源 URL + 原文哈希 + 抓取时间；禁止打码农场；限速 0.2–0.5 rps"
+runtime:
+  preferred: http
+  headed: optional
+params:
+  host: "www.csrc.gov.cn"
+  org_prefix: "shzyb"
+  column_code: "c101682"
+  channelid: "3fdeb6b6c586486b9c38aafa68cd2a93"
+  site_name: "上海专员办"
+  column_name: "通知公告"
+list_rule:
+  api_path: "/searchList/{channelid}"
+  api_path_alt:
+    - "/common/searchList/{channelid}"
+  query:
+    _isAgg: false
+    _isJson: true
+    _pageSize: 20
+    _template: index
+    _rangeTimeGte: ""
+    _channelName: ""
+    page: "{page}"
+  item_fields:
+    - title
+    - url
+    - publishedTimeStr
+    - publishedTime
+    - manuscriptId
+    - content
+    - contentHtml
+    - channelId
+    - channelName
+    - channelCodeName
+  pagination:
+    type: page_param
+    param: page
+    total_field: data.total
+    max_pages_per_run: 20
+detail_rule:
+  content_type: html
+  content_as: markdown
+  title: "meta[name=ArticleTitle] | list.title"
+  published_at: "meta[name=PubDate] | list.publishedTimeStr"
+  content: "article main container → detail-to-markdown"
+  attachments: "a[href$='.pdf'], a[href*='preview_resource.action']"
+url_pattern:
+  detail_template: "https://{host}/{org_prefix}/{column_code}/c{manuscriptId}/content.shtml"
+  id_from_list: manuscriptId
+  list_url_field: url
+incremental:
+  key: url
+  watermark_field: published_at
+  lookback_days: 3
+parse_fields:
+  required: [title, url, published_at, content_md]
+  optional: [source_org, manuscript_id, tags]
+rate_limit:
+  rps: 0.3
+  jitter_ms: [200, 800]
+tests:
+  golden_list_url: "https://www.csrc.gov.cn/searchList/3fdeb6b6c586486b9c38aafa68cd2a93?_isAgg=false&_isJson=true&_pageSize=5&_template=index&page=1"
+  golden_detail_urls: []   # fill after first successful SH searchList page under stable egress
+  fixture_shell_html: "/workspace/briefs/reg-crawl-samples/csrc_sh.html"
