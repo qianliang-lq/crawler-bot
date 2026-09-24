@@ -74,4 +74,4 @@ tests:
   golden_list_url: "https://www.csrc.gov.cn/searchList/059986f6f4834fe6ae61cb76bd9ef23b?_isAgg=false&_isJson=true&_pageSize=5&_template=index&page=1"
   golden_detail_urls:
     - "https://www.csrc.gov.cn/szzyb/c101700/c7652321/content.shtml"
-  fixture_list_json: "/workspace/briefs/reg-crawl-samples/csrc_searchList_sample.json"
+  fixture_list_json: "tests/fixtures/csrc-szzyb-0599/csrc_searchList_sample.json"
