@@ -1,0 +1,33 @@
+[project]
+name = "crawler-bot"
+version = "0.1.0"
+description = "监管源采集数字员工（M0）技能与站点配置"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+markers = [
+    "online: tests that require network access (deselected by default)",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -70,5 +70,5 @@ rate_limit:
   jitter_ms: [200, 800]
 tests:
   golden_list_url: "https://www.csrc.gov.cn/searchList/3fdeb6b6c586486b9c38aafa68cd2a93?_isAgg=false&_isJson=true&_pageSize=5&_template=index&page=1"
-  golden_detail_urls: []   # fill after first successful SH searchList page under stable egress
-  fixture_shell_html: "/workspace/briefs/reg-crawl-samples/csrc_sh.html"
+  golden_detail_urls: []
+  fixture_shell_html: "tests/fixtures/csrc-szzyb-0599/csrc_sh.html"
